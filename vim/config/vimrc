@@ -1,0 +1,80 @@
+"======================================================================
+" 通常設定
+"======================================================================
+set relativenumber
+set hlsearch
+set tabstop=2 "tabを表示するときにspaceいくつ分かという設定。expandtabと一緒に使うとtabからspaceに変換される時のspaceの個数になる
+set expandtab "tabをspaceに置き換える
+set smartindent "インデントを考慮して改行
+set shiftwidth=2 "インデント１つ分のspaceの数
+set clipboard+=unnamed "無名レジスタ(vimでyankしたときに使われる)とクリップボードレジスタを同期
+set virtualedit=block "テキストがない左側の矩形選択
+set wildmenu "コマンドライン補完
+
+"======================================================================
+" 通常モードで日本語状態問題
+"======================================================================
+let g:im_select_default = 'com.apple.inputmethod.Kotoeri.Roman'
+
+"======================================================================
+" Rubyジャンプ
+"======================================================================
+let g:vim_tags_project_tags_command = "/usr/local/Cellar/ctags/5.8/bin/ctags -f tags -R . 2>/dev/null"
+let g:vim_tags_gems_tags_command = "/usr/local/Cellar/ctags/5.8/bin/ctags -R -f Gemfile.lock.tags `bundle show --paths` 2>/dev/null"
+set tags+=tags,Gemfile.lock.tags
+
+"======================================================================
+" プラグイン 
+" Vimが好きになる本より
+" https://github.com/skanehira/dotfiles/blob/6b5f2e93cd3a4ab789c7877be609164a4f478a88/mac/vim/vimrc#L12-L61
+"======================================================================
+" dein.vim settings {{{
+" install dir {{{
+let s:dein_dir = expand('~/.cache/dein')
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
+" }}}
+
+" dein installation check {{{
+if &runtimepath !~# '/dein.vim'
+    if !isdirectory(s:dein_repo_dir)
+        execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_dir
+    endif
+    execute 'set runtimepath^=' . s:dein_repo_dir
+endif
+" }}}
+
+" begin settings {{{
+if dein#load_state(s:dein_dir)
+    call dein#begin(s:dein_dir)
+
+    " .toml file
+    let s:rc_dir = expand('~/.vim')
+    if !isdirectory(s:rc_dir)
+        call mkdir(s:rc_dir, 'p')
+    endif
+    let s:toml = s:rc_dir . '/dein.toml'
+
+    " read toml and cache
+    call dein#load_toml(s:toml, {'lazy': 0})
+
+    " end settings
+    call dein#end()
+    call dein#save_state()
+endif
+" }}}
+
+" plugin installation check {{{
+if dein#check_install()
+    call dein#install()
+endif
+" }}}
+
+" plugin remove check {{{
+let s:removed_plugins = dein#check_clean()
+if len(s:removed_plugins) > 0
+    call map(s:removed_plugins, "delete(v:val, 'rf')")
+    call dein#recache_runtimepath()
+endif
+" }}}
+
+" }}}
